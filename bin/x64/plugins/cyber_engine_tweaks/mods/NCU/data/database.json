@@ -1,0 +1,36 @@
+{
+    "player": {
+        "underworld_reputation": 0,
+        "completed_contracts": 0
+    },
+    "territories": {
+        "watson": {
+            "controlling_gang": "maelstrom",
+            "player_reputation": 0
+        },
+        "pacifica": {
+            "controlling_gang": "voodoo_boys",
+            "player_reputation": 0
+        },
+        "heywood": {
+            "controlling_gang": "valentinos",
+            "player_reputation": 0
+        },
+        "santo_domingo": {
+            "controlling_gang": "6th_street",
+            "player_reputation": 0
+        }
+    },
+    "contacts": {
+        "car_fixer": {
+            "name": "Yelena",
+            "discovered": false,
+            "trust_level": 0
+        },
+        "gang_fixer": {
+            "name": "Ian",
+            "discovered": false,
+            "trust_level": 0
+        }
+    }
+}
