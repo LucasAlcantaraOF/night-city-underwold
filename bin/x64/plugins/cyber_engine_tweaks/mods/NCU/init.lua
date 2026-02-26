@@ -27,6 +27,23 @@ function NCU:LoadDatabase()
     end
 end
 
+-- Função para salvar o banco de dados no disco (ex.: após discovered = true)
+function NCU:SaveDatabase()
+    if not NCU.data or type(NCU.data) ~= "table" then return false end
+    local content = json.encode(NCU.data)
+    if not content then return false end
+    local file = io.open("data/database.json", "w")
+    if file then
+        file:write(content)
+        file:close()
+        print("[NCU] Banco de dados salvo (database.json).")
+        return true
+    else
+        print("[NCU] Erro: não foi possível escrever database.json.")
+        return false
+    end
+end
+
 -- Hook de Início do Cyber Engine Tweaks quando carrega os scripts
 registerForEvent("onInit", function()
     print("[NCU] Inicializando Night City Underworld...")

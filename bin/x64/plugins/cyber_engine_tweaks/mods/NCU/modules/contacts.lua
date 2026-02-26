@@ -1,6 +1,8 @@
 -- contacts.lua
 -- Gerencia os Dois Fixers principais do mod (Definições).
--- Mensagens reais no celular do jogo exigem: Phone Extension Framework + RedScript do NCU (r6/scripts/NCU/NCU_Phone.reds).
+-- Mensagens reais no celular: Phone Extension Framework + RedScript (r6/scripts/NCU/NCU_Phone.reds).
+-- Com RedScript: o estado "intro já mostrada" é salvo NO SAVE DO JOGO (ScriptableSystem persistente).
+-- Sem RedScript: usamos database.json (discovered) e SaveDatabase() para persistir em disco.
 
 local Contacts = {
     car_fixer = {
@@ -24,11 +26,14 @@ function Contacts:init(ncuCore)
     print("[NCU:Contacts] Fixer Ativo: " .. self.gang_fixer.name)
     
     -- Chama a verificação da mensagem inicial logo após iniciar, checando o "save" do mod
-    self:CheckFirstTimeIntro(ncuCore.data)
+    self:CheckFirstTimeIntro(ncuCore)
 end
 
-function Contacts:CheckFirstTimeIntro(db)
+function Contacts:CheckFirstTimeIntro(ncuCore)
+    local db = ncuCore and ncuCore.data
     if not db or not db.contacts then return end
+
+    local needsSave = false
 
     -- Apresentação da Yelena
     if db.contacts.car_fixer and db.contacts.car_fixer.discovered == false then
@@ -49,6 +54,7 @@ function Contacts:CheckFirstTimeIntro(db)
         end
         
         db.contacts.car_fixer.discovered = true
+        needsSave = true
     end
 
     -- Apresentação do Ian
@@ -71,6 +77,12 @@ function Contacts:CheckFirstTimeIntro(db)
         end
         
         db.contacts.gang_fixer.discovered = true
+        needsSave = true
+    end
+
+    -- Persiste database.json em disco após marcar contatos como discovered
+    if needsSave and ncuCore and ncuCore.SaveDatabase then
+        ncuCore:SaveDatabase()
     end
 end
 
