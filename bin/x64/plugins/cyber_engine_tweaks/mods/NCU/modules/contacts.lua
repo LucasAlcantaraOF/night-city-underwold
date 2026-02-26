@@ -1,5 +1,6 @@
 -- contacts.lua
--- Gerencia os Dois Fixers principais do mod (Definições)
+-- Gerencia os Dois Fixers principais do mod (Definições).
+-- Mensagens reais no celular do jogo exigem: Phone Extension Framework + RedScript do NCU (r6/scripts/NCU/NCU_Phone.reds).
 
 local Contacts = {
     car_fixer = {
@@ -41,6 +42,12 @@ function Contacts:CheckFirstTimeIntro(db)
         print("[SISTEMA HUD]: Arquivo 'Yelena_Contato.vcf' transferido.")
         print("====================================================\n")
         
+        -- Tenta disparar pro celular de verdade. Se falhar (jogador sem o mod instalado), joga na tela grande
+        local sentDms = self:SendSMSViaFramework(self.car_fixer.id, self.car_fixer.name, self.car_fixer.greeting)
+        if not sentDms then
+            self:SendInGameNotification(self.car_fixer.name, self.car_fixer.greeting)
+        end
+        
         db.contacts.car_fixer.discovered = true
     end
 
@@ -57,7 +64,40 @@ function Contacts:CheckFirstTimeIntro(db)
         print("[SISTEMA HUD]: Número de Ian gravado na agenda.")
         print("====================================================\n")
         
+        -- Tenta disparar pro celular de verdade. Se falhar (jogador sem o mod instalado), joga na tela grande
+        local sentDms = self:SendSMSViaFramework(self.gang_fixer.id, self.gang_fixer.name, self.gang_fixer.greeting)
+        if not sentDms then
+            self:SendInGameNotification(self.gang_fixer.name, self.gang_fixer.greeting)
+        end
+        
         db.contacts.gang_fixer.discovered = true
+    end
+end
+
+-- Tenta enviar SMS pelo Phone Extension Framework. Só funciona via RedScript; em Lua sempre retorna false.
+function Contacts:SendSMSViaFramework(contactId, senderName, messageText)
+    -- O celular real é controlado pelo RedScript (NCU_Phone.reds + Phone Extension Framework).
+    -- Lua não tem API para o framework; quando o RedScript está instalado, as notificações
+    -- são disparadas pelo próprio NCU_Phone.reds ao inicializar o HUD do telefone.
+    return false
+end
+
+-- Fallback: notificação in-game quando o Phone Extension não está disponível (só CET/Lua).
+function Contacts:SendInGameNotification(senderName, messageText)
+    local ok, err = pcall(function()
+        local bb = Game.GetBlackboardSystem()
+        if bb then
+            local uiNotif = bb:Get(Game.GetAllBlackboardDefs().UI_Notifications)
+            if uiNotif then
+                local shortMsg = #messageText > 120 and (messageText:sub(1, 117) .. "...") or messageText
+                local onscreenMsg = "[" .. tostring(senderName) .. "] " .. shortMsg
+                uiNotif:SetVariant(Game.GetAllBlackboardDefs().UI_Notifications.WarningMessage, ToVariant(onscreenMsg), true)
+                return
+            end
+        end
+    end)
+    if not ok then
+        print("[NCU:Contacts] Fallback de notificação não disponível (use Phone Extension + NCU RedScript para SMS no celular).")
     end
 end
 

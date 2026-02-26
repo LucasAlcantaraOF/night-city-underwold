@@ -15,6 +15,12 @@ Antes de instalar o **NCU**, você **precisa** ter os seguintes mods base instal
 
 *Certifique-se de baixar as versões mais recentes destes dois mods compatíveis com a versão atual do seu jogo.*
 
+### Opcional: Mensagens reais no celular do jogo
+
+Para que a **Yelena** e o **Ian** apareçam como contatos reais no celular do V e as mensagens de apresentação apareçam no HUD (pop-up de SMS), instale também:
+
+3. **[Phone Extension Framework](https://www.nexusmods.com/cyberpunk2077/mods/24949)** - Permite que o NCU registre os fixers como contatos no telefone do jogo. Sem ele, as mensagens de intro só aparecem no console do CET e (se disponível) como notificação genérica na tela.
+
 ---
 
 ## 🛠️ Passo a Passo da Instalação
@@ -49,6 +55,8 @@ Cole essas pastas diretamente dentro do diretório principal do Cyberpunk 2077 d
    `[NCU] Inicialização completa. O Submundo está ativo.`
 
 Pronto! Se os contatos entrarem em contato pelo HUD assim que o jogo começar, a instalação foi um sucesso e você já pode começar a aceitar os favores da Yelena e do Ian.
+
+**Com Phone Extension Framework instalado:** após carregar um save, em alguns segundos devem aparecer as notificações de SMS da Yelena e do Ian no HUD. Abrindo o celular (aba Mensagens), os contatos **Yelena** e **Ian** aparecem na lista; ao clicar neles, a mensagem de apresentação é exibida.
 
 ---
 
