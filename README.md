@@ -7,12 +7,16 @@
 Para o nosso lançamento inicial (MVP), estamos focando em trazer as seguintes funcionalidades principais para refinar a experiência do submundo de Night City:
 
 - 📞 **Novos Contatos e Ligações Misteriosas**: Uma rede de fixers não-convencionais e clientes anônimos que entregam contratos misteriosos de forma progressiva, totalmente dublados em pt-br.
-- 🚗 **Roubos de Carros Exóticos**: Contratos de altíssimo risco e recompensa para adquirir veículos de exóticos, fortemente guardados e muitas vezes em trânsito.
-- 🏁 **Corridas Clandestinas**: Disputas ilegais nas ruas escuras envolvendo novos adversários e trajetos extremamente perigosos.
+- � **Progressão de Contratos**: Os Fixers do seu mod vão exigir credibilidade. Contratos maiores (como assassinar um peixe grande ou roubar um hipercarro da Arasaka) só serão liberados após você aumentar sua Reputação no Submundo, forçando o V a construir seu nome nas ruas gradativamente.
+- 🛡️ **Sistema de Gangues Dinâmico**: As ações do V terão impacto direto no respeito e influência das gangues na cidade. Incursões em territórios rivais podem gerar retaliações emboscadas nas ruas ou pedidos de reforços (backup) durante combates.
+- 🤝 **Sistema de Reputação Territorial**: O mod define áreas controladas por gangues. Realizar ações negativas em um território fará com que V seja malvisto pela comunidade local, podendo sofrer ataques abertos. Por outro lado, realizar atividades de interesse da facção, como operar desmanches na região, tornará aquela área mais amigável e segura para o jogador.
 - 🔪 **Acerto de Contas & Cobrança de Dívidas**: Missões brutais onde você atua diretamente como o executor de facções criminosas.
 - 🎯 **Assassinato de Aluguel**: Contratos de eliminação cirúrgica com alvos muito peculiares (exigindo mais planejamento do que força bruta).
-- 🚨 **Novo Sistema de Polícia (Revisão NCU)**: Ajustes pontuais no comportamento da polícia de Night City, tornando o nível de resposta dependente de qual território do mapa você se encontra.
 - 🏎️ **Novos Carros Exóticos**: Introdução de novos modelos de veículos construídos exclusivamente para a locomoção do V e para contratos de alto nível.
+-  **Desmanches (Chop Shops) para Veículos**: Locais clandestinos espalhados pela cidade e Badlands onde V pode entregar ou depenar veículos roubados em missões, gerando uma nova mecânica de fuga e "lavagem" de mercadoria quente, fugindo da polícia enquanto leva a encomenda ao destino.
+- � **Roubos de Carros Exóticos**: Contratos de altíssimo risco e recompensa para adquirir veículos exóticos, fortemente guardados e muitas vezes em trânsito.
+- 🏁 **Corridas Clandestinas**: Disputas ilegais nas ruas escuras envolvendo novos adversários e trajetos extremamente perigosos.
+- 🚨 **Novo Sistema de Polícia (Revisão NCU)**: Ajustes pontuais no comportamento da polícia de Night City, tornando o nível de resposta dependente de qual território do mapa você se encontra.
 
 ## 📁 Estrutura de Pastas Sugerida
 
@@ -30,7 +34,9 @@ night-city-underwold/
 │                       ├── modules/              # Lógica fracionada em pequenos serviços
 │                       │   ├── contacts.lua      # Sistema customizado de chamadas (UI e Lógica)
 │                       │   ├── missions.lua      # Gerenciador de missões/progresso (Cobranças/Assassinatos)
-│                       │   └── races.lua         # Eventos de corrida
+│                       │   ├── races.lua         # Eventos de corrida
+│                       │   ├── chop_shops.lua    # Sistema de pontos locais e lógica de entrega de carros
+│                       │   └── reputation.lua    # Lógica de progressão de Street Cred para o NCU
 │                       └── data/                 # Mini banco de dados Json/Lua do MVP
 │                           └── database.json
 │
@@ -39,6 +45,7 @@ night-city-underwold/
 │       └── NCU/
 │           ├── PoliceSystemHook.reds             # Hooks na IA de spawn/comportamento da polícia
 │           ├── VehicleTheftHook.reds             # Alterações de lógica de hacking/fuga em roubo de carros
+│           ├── GangReputation.reds               # Sistema reativo de reputação e emboscadas de gangues
 │           └── PlayerInteractions.reds           # Comportamentos hardcoded de RedScript para otimização
 │
 ├── archive/
