@@ -8,11 +8,7 @@ NCU = {
 
 -- Módulos principais do mod
 local modulesToLoad = {
-    "contacts",
-    "missions",
-    "races",
-    "chop_shops",
-    "reputation"
+    "contacts"
 }
 
 -- Função para carregar o banco de dados local (.json)
@@ -21,8 +17,8 @@ function NCU:LoadDatabase()
     if file then
         local content = file:read("*all")
         file:close()
-        -- Supondo uso nativo de decode simples, na prática usaremos jansson/lua-cjson
-        -- Para o protótipo: Carregando a string e exibindo num console
+        -- CET tem suporte nativo global à biblioteca json
+        NCU.data = json.decode(content)
         print("[NCU] Banco de dados de reputação e progressão carregado!")
         return true
     else
@@ -44,7 +40,7 @@ registerForEvent("onInit", function()
         if isLoaded then
             NCU.modules[modName] = module
             if module.init then
-                module:init() -- Inicializa a lógica de cada módulo
+                module:init(NCU) -- Passa a tabela principal inteira para o módulo ter acesso ao NCU.data
             end
             print("[NCU] Módulo carregado: " .. modName)
         else
