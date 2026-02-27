@@ -1,5 +1,5 @@
 // Night City Underworld (NCU) - Integração com Phone Extension Framework
-// Contatos reais no celular do jogo: Yelena (fixer veículos) e Ian (fixer gangues).
+// Contatos: Yelena (fixer veículos) e Ian (fixer gangues). Apenas primeiro diálogo (greeting do contacts.lua), sem respostas.
 // Requer: Phone Extension Framework (Nexus 24949) instalado.
 
 module NCU.Phone
@@ -11,8 +11,7 @@ import PhoneExtension.System.*
 public static func NCUYelenaContactHash() -> Int32 = 45705710
 public static func NCUIanContactHash() -> Int32 = 45705711
 
-// --- Persistência no save do jogo (discovered por save) ---
-// Campos persistent = salvos automaticamente no .sav; cada save tem seu próprio estado.
+// Persistência: só "intro já mostrada" para não repetir o pop-up no HUD
 public class NCUPersistenceSystem extends ScriptableSystem {
 	private persistent let m_yelenaIntroShown: Int32 = 0;
 	private persistent let m_ianIntroShown: Int32 = 0;
@@ -28,13 +27,7 @@ public class NCUPersistenceSystem extends ScriptableSystem {
 	public func SetIanIntroShown() -> Void { this.m_ianIntroShown = 1; }
 }
 
-// IDs das respostas do jogador (replies verdes nativas)
-public enum NCUReplyID {
-	PodeDeixar = 0,
-	Entendido = 1
-}
-
-// --- Listener Yelena (Fixer Veículos, Corridas, Desmanches) ---
+// --- Yelena (Veículos, Corridas Clandestinas e Desmanches) - greeting = contacts.lua car_fixer.greeting ---
 public class NCUYelenaPhoneListener extends PhoneEventsListener {
 	private let m_messengerController: wref<MessengerDialogViewController>;
 
@@ -43,7 +36,7 @@ public class NCUYelenaPhoneListener extends PhoneEventsListener {
 	}
 
 	private func GetGreetingYelena() -> String {
-		return s"Aí, V. Meu nome é Yelena. Me disseram que você manda bem no volante e não faz muitas perguntas. Eu gerencio uns desmanches clandestinos pelas Badlands e Watson. O negócio é o seguinte: tenho figurões pagando fortunas por Carros Exóticos. E por exótico, eu digo relíquias impecáveis antes desse mundo ficar uma merda. Máquinas a combustão pura de antigamente, manja? Em 2077 essas lendas de aço esquecidas valem mais que muito cromo. Se quiser levantar uns bons edinhos roubando essas naves de colecionadores ou provar que domina as ruas nessas mesmas máquinas, me dá um toque. Se eu gostar do teu serviço, a gente pode até descolar uma possibilidade de você lucrar com isso também, vai que você fica com algum desses carros.";
+		return s"Aí, V. Meu nome é Yelena. Me disseram que você manda bem no volante e não faz muitas perguntas. Eu gerencio uns desmanches clandestinos pelas Badlands e Watson. O negócio é o seguinte: tenho figurões pagando fortunas por 'Carros Exóticos'. E por exótico, eu digo relíquias impecáveis antes desse mundo ficar uma merda. Máquinas a combustão pura de antigamente, manja? Em 2077 essas lendas de aço esquecidas valem mais que muito cromo. Se quiser levantar uns bons edinhos roubando essas naves de colecionadores... ou provar que domina as ruas nessas mesmas máquinas, me dá um toque. Se eu gostar do teu serviço, a gente pode até descolar uma possibilidade de você lucrar com isso também, vai que você fica com algum desses carros.";
 	}
 
 	public func GetContactData(isText: Bool) -> ref<ContactData> {
@@ -70,28 +63,16 @@ public class NCUYelenaPhoneListener extends PhoneEventsListener {
 	public func ShowDialog(messengerController: wref<MessengerDialogViewController>) -> Bool {
 		this.m_messengerController = messengerController;
 		messengerController.PushMessageCustom(this.GetGreetingYelena(), MessageViewType.Received, s"Yelena", true);
-		// Respostas verdes nativas (como no jogo base)
-		messengerController.PushReplyCustom(EnumInt(NCUReplyID.PodeDeixar), s"Pode deixar", false, true, messengerController.m_hasFocus);
-		messengerController.PushReplyCustom(EnumInt(NCUReplyID.Entendido), s"Entendido. Qual o primeiro trabalho?", false, false, messengerController.m_hasFocus);
 		messengerController.m_scrollController.SetScrollPosition(1.00);
 		return true;
 	}
 
 	public func ActivateReply(messageID: Int32) -> Void {
-		this.m_messengerController.ClearRepliesCustom();
-		if messageID == EnumInt(NCUReplyID.PodeDeixar) {
-			this.m_messengerController.PushMessageCustom(s"Pode deixar.", MessageViewType.Sent, s"V", false);
-			this.m_messengerController.PushMessageCustom(s"Boa. Quando tiver algo no radar, te aviso. Não some.", MessageViewType.Received, s"Yelena", true);
-		};
-		if messageID == EnumInt(NCUReplyID.Entendido) {
-			this.m_messengerController.PushMessageCustom(s"Entendido. Qual o primeiro trabalho?", MessageViewType.Sent, s"V", false);
-			this.m_messengerController.PushMessageCustom(s"Vou te mandar um pin no mapa. Desmanche nas Badlands, entrega o carro no local. Se fizer bonito, a gente segue.", MessageViewType.Received, s"Yelena", true);
-		};
-		this.m_messengerController.m_scrollController.SetScrollPosition(1.00);
+		// Sem respostas: apenas primeiro diálogo (greeting)
 	}
 }
 
-// --- Listener Ian (Fixer Gangues, Acerto de Contas) ---
+// --- Ian (Reputação, Acerto de Contas e Controle de Território) - greeting = contacts.lua gang_fixer.greeting ---
 public class NCUIanPhoneListener extends PhoneEventsListener {
 	private let m_messengerController: wref<MessengerDialogViewController>;
 
@@ -100,7 +81,7 @@ public class NCUIanPhoneListener extends PhoneEventsListener {
 	}
 
 	private func GetGreetingIan() -> String {
-		return s"Iae Filha da Puta, tudo bem? As gangues de Night City estão passando da porra dos limites e eu trabalho mantendo a balança de poder do jeito certo, ta ligado caralho. Preciso de um executor para meter o pau na mesa e mandar medir. Alguém pra cobrar dívidas, apagar alvos problemáticos e mostrar pra essas facções de merda quem é que manda nos territórios. Se você fizer o trabalho sujo por mim, garanto que o seu nome será respeitado até pelo líder mais casca-grossa da Maelstrom, e ele vai querer mamar suas bolas. Não fode comigo, se não eu vou foder com você.";
+		return s"Iae Filha da Puta, tudo bem? As gangues de Night City estão passando da porra dos limites e eu trabalho mantendo a balança de poder do jeito certo, ta ligado caralho?. Preciso de um executor para meter o pau na mesa e mandar medir. Alguém pra cobrar dívidas, apagar alvos problemáticos e mostrar pra essas facções de merda quem é que manda nos territórios. Se você fizer o trabalho sujo por mim, garanto que o seu nome será respeitado até pelo líder mais casca-grossa da Maelstrom, e ele vai querer mamar suas bolas. Não fode comigo, se não eu vou foder com você.";
 	}
 
 	public func GetContactData(isText: Bool) -> ref<ContactData> {
@@ -127,28 +108,16 @@ public class NCUIanPhoneListener extends PhoneEventsListener {
 	public func ShowDialog(messengerController: wref<MessengerDialogViewController>) -> Bool {
 		this.m_messengerController = messengerController;
 		messengerController.PushMessageCustom(this.GetGreetingIan(), MessageViewType.Received, s"Ian", true);
-		// Respostas verdes nativas (como no jogo base)
-		messengerController.PushReplyCustom(EnumInt(NCUReplyID.PodeDeixar), s"Pode deixar", false, true, messengerController.m_hasFocus);
-		messengerController.PushReplyCustom(EnumInt(NCUReplyID.Entendido), s"Beleza. To dentro.", false, false, messengerController.m_hasFocus);
 		messengerController.m_scrollController.SetScrollPosition(1.00);
 		return true;
 	}
 
 	public func ActivateReply(messageID: Int32) -> Void {
-		this.m_messengerController.ClearRepliesCustom();
-		if messageID == EnumInt(NCUReplyID.PodeDeixar) {
-			this.m_messengerController.PushMessageCustom(s"Pode deixar.", MessageViewType.Sent, s"V", false);
-			this.m_messengerController.PushMessageCustom(s"É isso. Quando tiver serviço, te chamo. Não me fode.", MessageViewType.Received, s"Ian", true);
-		};
-		if messageID == EnumInt(NCUReplyID.Entendido) {
-			this.m_messengerController.PushMessageCustom(s"Beleza. To dentro.", MessageViewType.Sent, s"V", false);
-			this.m_messengerController.PushMessageCustom(s"Ótimo. Primeiro job: cobrança. Te mando os dados. Resolve e me avisa.", MessageViewType.Received, s"Ian", true);
-		};
-		this.m_messengerController.m_scrollController.SetScrollPosition(1.00);
+		// Sem respostas: apenas primeiro diálogo (greeting)
 	}
 }
 
-// Callback para notificação atrasada (pop-up SMS no HUD)
+// Pop-up SMS no HUD (notificação atrasada de intro)
 public class NCUIntroNotificationCallback extends DelayCallback {
 	private let m_player: wref<GameObject>;
 	private let m_contactHash: Int32;
@@ -169,7 +138,6 @@ public class NCUIntroNotificationCallback extends DelayCallback {
 		if IsDefined(syst) {
 			syst.NotifyNewMessageCustom(this.m_contactHash, this.m_title, this.m_text);
 		};
-		// Marca como "intro já mostrada" neste save (persiste no .sav)
 		let ncuPersist = NCUPersistenceSystem.GetInstance(this.m_player);
 		if IsDefined(ncuPersist) {
 			if this.m_contactHash == NCUYelenaContactHash() {
@@ -195,7 +163,6 @@ protected cb func OnInitialize() -> Bool {
 	let player: ref<GameObject> = this.GetPlayerControlledObject();
 	let gi: GameInstance = player.GetGame();
 
-	// Registrar contatos NCU (Yelena e Ian)
 	if !IsDefined(this.m_ncuYelenaContact) {
 		this.m_ncuYelenaContact = new NCUYelenaPhoneListener();
 	};
@@ -205,15 +172,14 @@ protected cb func OnInitialize() -> Bool {
 	syst.Register(this.m_ncuYelenaContact);
 	syst.Register(this.m_ncuIanContact);
 
-	// Agendar notificações de intro no HUD só se ainda não foram mostradas NESTE SAVE (estado salvo no jogo)
 	let ncuPersist = NCUPersistenceSystem.GetInstance(player);
 	let delaySys = GameInstance.GetDelaySystem(gi);
 	if IsDefined(delaySys) && IsDefined(ncuPersist) {
 		if !ncuPersist.WasYelenaIntroShown() {
-			delaySys.DelayCallback(NCUIntroNotificationCallback.Create(player, NCUYelenaContactHash(), s"Yelena", s"Aí, V. Meu nome é Yelena. Me disseram que você manda bem no volante e não faz muitas perguntas. Eu gerencio uns desmanches clandestinos pelas Badlands e Watson. O negócio é o seguinte: tenho figurões pagando fortunas por Carros Exóticos. E por exótico, eu digo relíquias impecáveis antes desse mundo ficar uma merda. Máquinas a combustão pura de antigamente, manja? Em 2077 essas lendas de aço esquecidas valem mais que muito cromo. Se quiser levantar uns bons edinhos roubando essas naves de colecionadores ou provar que domina as ruas nessas mesmas máquinas, me dá um toque. Se eu gostar do teu serviço, a gente pode até descolar uma possibilidade de você lucrar com isso também, vai que você fica com algum desses carros."), 4.0, false);
+			delaySys.DelayCallback(NCUIntroNotificationCallback.Create(player, NCUYelenaContactHash(), s"Yelena", s"Aí, V. Meu nome é Yelena. Me disseram que você manda bem no volante e não faz muitas perguntas. Eu gerencio uns desmanches clandestinos pelas Badlands e Watson. O negócio é o seguinte: tenho figurões pagando fortunas por 'Carros Exóticos'. E por exótico, eu digo relíquias impecáveis antes desse mundo ficar uma merda. Máquinas a combustão pura de antigamente, manja? Em 2077 essas lendas de aço esquecidas valem mais que muito cromo. Se quiser levantar uns bons edinhos roubando essas naves de colecionadores... ou provar que domina as ruas nessas mesmas máquinas, me dá um toque. Se eu gostar do teu serviço, a gente pode até descolar uma possibilidade de você lucrar com isso também, vai que você fica com algum desses carros."), 4.0, false);
 		};
 		if !ncuPersist.WasIanIntroShown() {
-			delaySys.DelayCallback(NCUIntroNotificationCallback.Create(player, NCUIanContactHash(), s"Ian", s"Iae Filha da Puta, tudo bem? As gangues de Night City estão passando da porra dos limites e eu trabalho mantendo a balança de poder do jeito certo, ta ligado caralho. Preciso de um executor para meter o pau na mesa e mandar medir. Alguém pra cobrar dívidas, apagar alvos problemáticos e mostrar pra essas facções de merda quem é que manda nos territórios. Se você fizer o trabalho sujo por mim, garanto que o seu nome será respeitado até pelo líder mais casca-grossa da Maelstrom, e ele vai querer mamar suas bolas. Não fode comigo, se não eu vou foder com você."), 7.0, false);
+			delaySys.DelayCallback(NCUIntroNotificationCallback.Create(player, NCUIanContactHash(), s"Ian", s"Iae Filha da Puta, tudo bem? As gangues de Night City estão passando da porra dos limites e eu trabalho mantendo a balança de poder do jeito certo, ta ligado caralho?. Preciso de um executor para meter o pau na mesa e mandar medir. Alguém pra cobrar dívidas, apagar alvos problemáticos e mostrar pra essas facções de merda quem é que manda nos territórios. Se você fizer o trabalho sujo por mim, garanto que o seu nome será respeitado até pelo líder mais casca-grossa da Maelstrom, e ele vai querer mamar suas bolas. Não fode comigo, se não eu vou foder com você."), 7.0, false);
 		};
 	};
 

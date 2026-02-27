@@ -32,5 +32,42 @@
             "discovered": false,
             "trust_level": 0
         }
+    },
+    "chopshop": {
+        "reward_eddies": 1,
+        "locations": [
+            {
+                "id": "watson_north",
+                "name": "Desmanche Watson Norte",
+                "x": 380,
+                "y": 195,
+                "z": 185,
+                "radius_meters": 20
+            },
+            {
+                "id": "badlands_wind",
+                "name": "Desmanche Badlands (Eólicas)",
+                "x": -1250,
+                "y": 340,
+                "z": 600,
+                "radius_meters": 25
+            },
+            {
+                "id": "santo_domingo_yard",
+                "name": "Desmanche Santo Domingo",
+                "x": -550,
+                "y": 95,
+                "z": 430,
+                "radius_meters": 20
+            },
+            {
+                "id": "heywood_mercado",
+                "name": "Desmanche Heywood Mercado",
+                "x": -250,
+                "y": 110,
+                "z": 290,
+                "radius_meters": 18
+            }
+        ]
     }
 }

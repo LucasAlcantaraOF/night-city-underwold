@@ -8,7 +8,8 @@ NCU = {
 
 -- Módulos principais do mod
 local modulesToLoad = {
-    "contacts"
+    "contacts",
+    "chopshop"
 }
 
 -- Função para carregar o banco de dados local (.json)
@@ -44,6 +45,14 @@ function NCU:SaveDatabase()
     end
 end
 
+function NCU:Update(deltaTime)
+    for _, module in pairs(self.modules) do
+        if module.update then
+            module:update(self, deltaTime)
+        end
+    end
+end
+
 -- Hook de Início do Cyber Engine Tweaks quando carrega os scripts
 registerForEvent("onInit", function()
     print("[NCU] Inicializando Night City Underworld...")
@@ -66,6 +75,10 @@ registerForEvent("onInit", function()
     end
 
     print("[NCU] Inicialização completa. O Submundo está ativo.")
+end)
+
+registerForEvent("onUpdate", function(deltaTime)
+    NCU:Update(deltaTime)
 end)
 
 -- Hook para atualizações a cada frame da interface (usaremos mais pra frente)

@@ -24,7 +24,7 @@ function Contacts:init(ncuCore)
     print("[NCU:Contacts] Módulo de Contatos inicializado.")
     print("[NCU:Contacts] Fixer Ativo: " .. self.car_fixer.name)
     print("[NCU:Contacts] Fixer Ativo: " .. self.gang_fixer.name)
-    
+
     -- Chama a verificação da mensagem inicial logo após iniciar, checando o "save" do mod
     self:CheckFirstTimeIntro(ncuCore)
 end
